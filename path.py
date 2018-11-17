@@ -1,6 +1,7 @@
+
+
 class Path:
-    solution_list = []
-    
+  
     def game1(self):
         self.solution_list.append((1,3,"s"))
         self.solution_list.append((2,5,"w"))
