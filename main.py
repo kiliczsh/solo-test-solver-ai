@@ -25,14 +25,14 @@ def print_tree_of(parent_node):
 
 if __name__ == "__main__":
 
-    game_board = board.Board(['n', 'e', 's', 'w'],np.array([[".", ".", "*", "*", "*", ".", "."],
-                                                      [".", ".", "*", "*", "*", ".", "."],
-                                                      ["*", "*", "*", "*", "*", "*", "*"],
-                                                      ["*", "*", "*", "o", "*", "*", "*"],
-                                                      ["*", "*", "*", "*", "*", "*", "*"],
-                                                      [".", ".", "*", "*", "*", ".", "."],
-                                                      [".", ".", "*", "*", "*", ".", "."]]))
-    game_board.update_board()
+    game_board = board.Board(['n', 'e', 's', 'w'],
+                  np.array([[2, 2, 1, 1, 1, 2, 2],
+                            [2, 2, 1, 1, 1, 2, 2],
+                            [1, 1, 1, 1, 1, 1, 1],
+                            [1, 1, 1, 0, 1, 1, 1],
+                            [1, 1, 1, 1, 1, 1, 1],
+                            [2, 2, 1, 1, 1, 2, 2],
+                            [2, 2, 1, 1, 1, 2, 2]],dtype=np.int))
     point_table = game_board.create_square_points()
 
     initial_board = np.copy(game_board.board_array)

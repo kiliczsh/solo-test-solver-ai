@@ -1,6 +1,36 @@
 import numpy as np
 import path 
 
+LIMIT = 7
+
+
+# make moves with given coordinates and directions
+def make_move(board_array_param,x,y,direction):
+    counter = 0
+    #print(board_array_param)
+    if( (x==0 or x==1 or x==5 or x==6) & (y==0 or y==1 or y==5 or y==6) ):
+        return board_array_param
+    for i in range(LIMIT):
+        for j in range(LIMIT):
+            if( (x is i) and (y is j) ):
+                board_array_param[i,j] = 0
+                if( (direction == "s") ):
+                    board_array_param[i+2,j] = 1
+                    board_array_param[i+1,j] = 0
+                if( (direction == "e") ):
+                    board_array_param[i,j+2] = 1
+                    board_array_param[i,j+1] = 0
+                if( (direction == "n") ):
+                    board_array_param[i-2,j] = 1
+                    board_array_param[i-1,j] = 0
+                if( (direction == "w") ):
+                    board_array_param[i,j-2] = 1
+                    board_array_param[i,j-1] = 0
+            else:       
+                counter += 1
+    #print(board_array_param)
+    return board_array_param
+
 
 class Board:
 
@@ -11,32 +41,20 @@ class Board:
     # print board properly
     def print_board(self):
         print("\n 0  | ",end="")
-        for i in range(len(self.board_array)):
-            for j in range(len(self.board_array[i])):
+        for i in range(LIMIT):
+            for j in range(LIMIT):
                 print(self.board_array[i][j],end=" ")
             print("\n",i+1," | ",end="")
         print()
     # end of printing board array
     
-    # change board array with numeric values
-    def update_board(self):
-        for i in range(len(self.board_array)):
-            for j in range(len(self.board_array[i])):
-                if self.board_array[i, j] == '*':
-                    self.board_array[i, j] = 1
-                elif self.board_array[i, j] == 'o':
-                    self.board_array[i, j] = 0
-                else:
-                    self.board_array[i, j] = 2
-    # end of board
-
     # give each square points in document
     def create_square_points(self):
-        s = (7,7)
+        s = (LIMIT,LIMIT)
         point_array = np.zeros(s,dtype=np.int)
         counter = 0
-        for i in range(len(self.board_array)):
-            for j in range(len(self.board_array[i])):
+        for i in range(LIMIT):
+            for j in range(LIMIT):
                 cur_val = int(self.board_array[i, j])
                 if ((cur_val is 1) or (cur_val is 0)):
                     counter += 1
@@ -47,38 +65,12 @@ class Board:
         return point_array
     # end of function
 
-    # make moves with given coordinates and directions
-    def make_move(self,board_array_param,x,y,direction):
-        counter = 0
-        #print(board_array_param)
-        if( (x==0 or x==1 or x==5 or x==6) & (y==0 or y==1 or y==5 or y==6) ):
-            return board_array_param
-        for i in range(len(board_array_param)):
-            for j in range(len(board_array_param[i])):
-                if( (x is i) and (y is j) ):
-                    board_array_param[i,j] = 0
-                    if( (direction == "s") ):
-                        board_array_param[i+2,j] = 1
-                        board_array_param[i+1,j] = 0
-                    if( (direction == "e") ):
-                        board_array_param[i,j+2] = 1
-                        board_array_param[i,j+1] = 0
-                    if( (direction == "n") ):
-                        board_array_param[i-2,j] = 1
-                        board_array_param[i-1,j] = 0
-                    if( (direction == "w") ):
-                        board_array_param[i,j-2] = 1
-                        board_array_param[i,j-1] = 0
-                else:       
-                    counter += 1
-        #print(board_array_param)
-        return board_array_param
 
     # check whether is the solution is optimum
     def check_win(self):
         flag = True
-        for i in range(len(self.board_array)):
-            for j in range(len(self.board_array[i])):
+        for i in range(LIMIT):
+            for j in range(LIMIT):
                 num = int(self.board_array[i,j])
                 
                 if( (i==0 or i==1 or i==5 or i==6) & (j==0 or j==1 or j==5 or j==6) ):
@@ -99,57 +91,6 @@ class Board:
         for mov in game1:
             self.make_move(mov[0],mov[1],mov[2])
     
-    def list_possible_moves(self,board_array_param):
-        fun_move_list = []
-        for i in range(len(board_array_param)):
-            for j in range(len(board_array_param[i])):
-                current_square = int( board_array_param[i,j] )
-                bannned_square = (i==0 or i==1 or i==5 or i==6) and (j==0 or j==1 or j==5 or j==6)
-                if(not bannned_square):
-                    if(current_square == 1):
-                        try:
-                            right_square = None
-                            if(j+2 < 7 ):
-                                right_square = int(board_array_param[i,j+2])
-                                gap_peg = int(board_array_param[i,j+1])
-                            if(right_square == 0 and gap_peg == 1):
-                                fun_move_list.append((i,j,"e"))
-                        except NameError:
-                            right_square = None
-                        
-                        
-                        try:
-                            left_square = None
-                            if( j-2 >= 0):
-                                left_square = int(board_array_param[i,j-2])
-                                gap_peg = int(board_array_param[i,j-1])
-                            if(left_square == 0 and gap_peg == 1):
-                                fun_move_list.append((i,j,"w"))
-                        except NameError:
-                            left_square = None
-                        
-                        
-                        try:
-                            down_square = None
-                            if(i+2 < 7):
-                                down_square = int(board_array_param[i+2,j])
-                                gap_peg = int(board_array_param[i+1,j])
-                            if(down_square == 0 and gap_peg == 1):
-                                fun_move_list.append((i,j,"s"))
-                        except NameError:
-                            down_square = None
-                        
-                        
-                        try:
-                            up_square = None
-                            if(i-2 >= 0):
-                                up_square = int(board_array_param[i-2,j])
-                                gap_peg = int(board_array_param[i-1,j])
-                            if(up_square == 0 and gap_peg == 1 ):
-                                fun_move_list.append((i,j,"n"))
-                        except NameError:
-                            up_square = None
-        
-        return fun_move_list
+
 
                     
