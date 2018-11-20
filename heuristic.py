@@ -13,3 +13,6 @@ def man_dist(board_array):
                             dist += abs(i - k) + abs(j - l)
     ret_val = dist / (2 * peg_count)
     return ret_val
+
+#def calc(board_array):
+

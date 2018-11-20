@@ -1,8 +1,10 @@
 import board
 import path
 import heuristic
+import search
 import numpy as np
 from anytree import Node, RenderTree
+
 
 # ---------------------------------------- functions ---------------------------------------
 
@@ -31,19 +33,24 @@ if __name__ == "__main__":
                                                       [".", ".", "*", "*", "*", ".", "."],
                                                       [".", ".", "*", "*", "*", ".", "."]]))
     game_board.update_board()
-    
+    point_table = game_board.create_square_points()
+
     initial_board = np.copy(game_board.board_array)
-    man_dist_val = heuristic.man_dist(initial_board)
-    move_list = game_board.list_possible_moves(initial_board)
-    root = Node(initial_board)
-    root = create_and_add(root,initial_board,move_list) #TODO
+
+    search.bfs(initial_board,point_table)
+
+
+    #man_dist_val = heuristic.man_dist(initial_board)
+    #move_list = game_board.list_possible_moves(initial_board)
+    #root = Node(initial_board)
+    #root = create_and_add(root,initial_board,move_list) #TODO
 
     #for element in RenderTree(root):
     #    current_board = element.node.name
     #    current_move_list = game_board.list_possible_moves(current_board)
     #    print(current_board)
 
-    print_tree_of(root)
+    #print_tree_of(root)
 
     """
     game_board.play_game()

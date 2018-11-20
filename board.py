@@ -1,6 +1,7 @@
 import numpy as np
 import path 
 
+
 class Board:
 
     def __init__(self,directions,board_array):
@@ -28,6 +29,23 @@ class Board:
                 else:
                     self.board_array[i, j] = 2
     # end of board
+
+    # give each square points in document
+    def create_square_points(self):
+        s = (7,7)
+        point_array = np.zeros(s,dtype=np.int)
+        counter = 0
+        for i in range(len(self.board_array)):
+            for j in range(len(self.board_array[i])):
+                cur_val = int(self.board_array[i, j])
+                if ((cur_val is 1) or (cur_val is 0)):
+                    counter += 1
+                    ass_num = counter
+                else:
+                    ass_num = 999
+                point_array[i,j] = ass_num
+        return point_array
+    # end of function
 
     # make moves with given coordinates and directions
     def make_move(self,board_array_param,x,y,direction):
@@ -85,7 +103,7 @@ class Board:
         fun_move_list = []
         for i in range(len(board_array_param)):
             for j in range(len(board_array_param[i])):
-                current_square = int(board_array_param[i,j])
+                current_square = int( board_array_param[i,j] )
                 bannned_square = (i==0 or i==1 or i==5 or i==6) and (j==0 or j==1 or j==5 or j==6)
                 if(not bannned_square):
                     if(current_square == 1):
