@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     initial_board = np.copy(game_board.board_array)
 
-    search.bfs(initial_board,point_table)
+    search.dfs(initial_board,point_table)
 
 
     #man_dist_val = heuristic.man_dist(initial_board)
