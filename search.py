@@ -61,20 +61,28 @@ def list_possible_moves(board_array_param):
     
     return fun_move_list
 
+def print_parents(sol_node):
+    print(sol_node.board)
+    print(sol_node.parent)
+    parent_node = sol_node.parent
+    if (parent_node != None):
+        print_parents(parent_node)
+
+
 def dfs(cur_node,point_table):
     
-    frontier_list = [("flag",cur_node)]
-    counter = 0
+    FRONTIER_LIST = [("flag",cur_node)]
+    WHILE_COUNT = 0
     TIME_LIMIT = 3600 #seconds
     start = time()
-    while frontier_list:
+    while FRONTIER_LIST:
         IS_TIME_OUT = time() > TIME_LIMIT +  start
         if(IS_TIME_OUT):
             break
-        if frontier_list[0] =="flag":
-            frontier_list.pop(0)
-        if(counter%5 == 0):
-            print("Sıra: ",counter)
+        if FRONTIER_LIST[0] =="flag":
+            FRONTIER_LIST.pop(0)
+        if(WHILE_COUNT%1000 == 0):
+            print("Tur: ",WHILE_COUNT)
         move_list = list_possible_moves(cur_node.board)
         move_list.sort(reverse=True)
         for new_states in move_list:
@@ -83,21 +91,64 @@ def dfs(cur_node,point_table):
             move_value = int(point_table[peg_x,peg_y]) + int(point_table[free_x,free_y])
             new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
             new_node = MyNode(new_board,cur_node)
-            frontier_list.append((move_value,new_node))
+            FRONTIER_LIST.append((move_value,new_node))
             IS_FOUND = is_equal(new_node.board,SOLUTION)    
-            #IS_FOUND = counter > 30000
+            #IS_FOUND = WHILE_COUNT > 30000
             if(IS_FOUND):
-                print("Counter: ", counter)
+                print("WHILE_COUNT: ", WHILE_COUNT)
                 print("AWESOME")
+                print_parents(new_node)
                 return True                       
-        if frontier_list:
-            frontier_list_len = len(frontier_list)
-            cur_fr_list_element = frontier_list.pop(frontier_list_len-1)
+        if FRONTIER_LIST:
+            FRONTIER_LIST_LEN = len(FRONTIER_LIST)
+            cur_fr_list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
             cur_node = cur_fr_list_element[1]
         else:
             print("DONE")
             cur_node = None
             return True
-        counter +=1
-    print("Count: ",counter)
+        WHILE_COUNT +=1
+    print("Count: ",WHILE_COUNT)
     #7667769. sırada sonuç buldu #TODO
+
+def dfs_spec(cur_node,point_table):
+    
+    FRONTIER_LIST = [("flag",cur_node)]
+    WHILE_COUNT = 0
+    TIME_LIMIT = 3600 #seconds
+    start = time()
+    while FRONTIER_LIST:
+        IS_TIME_OUT = time() > TIME_LIMIT +  start
+        if(IS_TIME_OUT):
+            break
+        if FRONTIER_LIST[0] =="flag":
+            FRONTIER_LIST.pop(0)
+        if(WHILE_COUNT%1000 == 0):
+            print("Tur: ",WHILE_COUNT)
+        move_list = list_possible_moves(cur_node.board)
+        move_list.sort(reverse=True)
+        for new_states in move_list:
+            peg_x,peg_y, way = int(new_states[0]),int(new_states[1]),new_states[2]
+            free_x,free_y = get_extra(peg_x,peg_y,way)
+            move_value = int(point_table[peg_x,peg_y]) + int(point_table[free_x,free_y])
+            new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
+            move_value = heu.man_dist(new_board)
+            new_node = MyNode(new_board,cur_node)
+            FRONTIER_LIST.append((move_value,new_node))
+            IS_FOUND = is_equal(new_node.board,SOLUTION)    
+            #IS_FOUND = WHILE_COUNT > 30000
+            if(IS_FOUND):
+                print("WHILE_COUNT: ", WHILE_COUNT)
+                print("AWESOME")
+                print_parents(new_node)
+                return True                       
+        if FRONTIER_LIST:
+            FRONTIER_LIST_LEN = len(FRONTIER_LIST)
+            cur_fr_list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
+            cur_node = cur_fr_list_element[1]
+        else:
+            print("DONE")
+            cur_node = None
+            return True
+        WHILE_COUNT +=1
+    print("Count: ",WHILE_COUNT)

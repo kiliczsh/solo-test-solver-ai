@@ -1,11 +1,10 @@
 import board
 import path
 import heuristic
-from search import dfs
+from search import dfs,dfs_spec
 import numpy as np
 from mynode import MyNode
 from item import INITIAL
-from multiprocessing import Process
 from time import sleep,time
 
 # ------------------------------------------  main -----------------------------------------
@@ -18,5 +17,5 @@ if __name__ == "__main__":
     point_table = game_board.create_square_points()
     initial_board = np.copy(game_board.board_array)
     initial_node = MyNode(initial_board,None)
-    result = dfs(initial_node,point_table)
+    result = dfs_spec(initial_node,point_table)
 
