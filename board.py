@@ -62,6 +62,8 @@ class Board:
                 else:
                     ass_num = 999
                 point_array[i,j] = ass_num
+        print(point_array)
+        print()
         return point_array
     # end of function
 

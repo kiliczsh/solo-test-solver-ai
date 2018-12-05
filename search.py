@@ -1,10 +1,13 @@
 import numpy as np 
 import board
-import heuristic as heu
-from item import INITIAL,LIMIT,SAMPLE,SOLUTION,is_equal,get_extra
+from heuristic import man_dist 
+from item import INITIAL,LIMIT,SAMPLE,SOLUTION,is_equal,get_extra,count_depth,count_pegs
 from mynode import MyNode
-from time import sleep,time
+from time import time
+from operator import itemgetter
+from pprint import pprint 
 
+TIME_LIMIT = 20 #seconds
 
 def list_possible_moves(board_array_param):
     fun_move_list = []
@@ -62,69 +65,34 @@ def list_possible_moves(board_array_param):
     return fun_move_list
 
 def print_parents(sol_node):
-    print(sol_node.board)
-    print(sol_node.parent)
+    print(sol_node.depth_level)
+    pprint(sol_node.board)
     parent_node = sol_node.parent
     if (parent_node != None):
         print_parents(parent_node)
 
 
-def dfs(cur_node,point_table):
-    
-    FRONTIER_LIST = [("flag",cur_node)]
-    WHILE_COUNT = 0
-    TIME_LIMIT = 3600 #seconds
-    start = time()
-    while FRONTIER_LIST:
-        IS_TIME_OUT = time() > TIME_LIMIT +  start
-        if(IS_TIME_OUT):
-            break
-        if FRONTIER_LIST[0] =="flag":
-            FRONTIER_LIST.pop(0)
-        if(WHILE_COUNT%1000 == 0):
-            print("Tur: ",WHILE_COUNT)
-        move_list = list_possible_moves(cur_node.board)
-        move_list.sort(reverse=True)
-        for new_states in move_list:
-            peg_x,peg_y, way = int(new_states[0]),int(new_states[1]),new_states[2]
-            free_x,free_y = get_extra(peg_x,peg_y,way)
-            move_value = int(point_table[peg_x,peg_y]) + int(point_table[free_x,free_y])
-            new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
-            new_node = MyNode(new_board,cur_node)
-            FRONTIER_LIST.append((move_value,new_node))
-            IS_FOUND = is_equal(new_node.board,SOLUTION)    
-            #IS_FOUND = WHILE_COUNT > 30000
-            if(IS_FOUND):
-                print("WHILE_COUNT: ", WHILE_COUNT)
-                print("AWESOME")
-                print_parents(new_node)
-                return True                       
-        if FRONTIER_LIST:
-            FRONTIER_LIST_LEN = len(FRONTIER_LIST)
-            cur_fr_list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
-            cur_node = cur_fr_list_element[1]
-        else:
-            print("DONE")
-            cur_node = None
-            return True
-        WHILE_COUNT +=1
-    print("Count: ",WHILE_COUNT)
-    #7667769. sırada sonuç buldu #TODO
+def bfs(cur_node,point_table):
+    pass
 
-def dfs_spec(cur_node,point_table):
-    
+
+def dfs(cur_node,point_table):
+    NODE_VISITED = 1
+    print("Depth First Search")
+    print("Time Limit is 1 Hour")
     FRONTIER_LIST = [("flag",cur_node)]
     WHILE_COUNT = 0
-    TIME_LIMIT = 3600 #seconds
     start = time()
     while FRONTIER_LIST:
-        IS_TIME_OUT = time() > TIME_LIMIT +  start
+        IS_TIME_OUT = time() > TIME_LIMIT +  start        
         if(IS_TIME_OUT):
+            print("TIME IS OUT")
+            print("Total Run Time: ",time()-start)
             break
+        if(WHILE_COUNT%10 == 0):
+            print("Tur: ",WHILE_COUNT)
         if FRONTIER_LIST[0] =="flag":
             FRONTIER_LIST.pop(0)
-        if(WHILE_COUNT%1000 == 0):
-            print("Tur: ",WHILE_COUNT)
         move_list = list_possible_moves(cur_node.board)
         move_list.sort(reverse=True)
         for new_states in move_list:
@@ -132,23 +100,89 @@ def dfs_spec(cur_node,point_table):
             free_x,free_y = get_extra(peg_x,peg_y,way)
             move_value = int(point_table[peg_x,peg_y]) + int(point_table[free_x,free_y])
             new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
-            move_value = heu.man_dist(new_board)
-            new_node = MyNode(new_board,cur_node)
+            new_node = MyNode(new_board,cur_node,count_depth(cur_node)+1)
             FRONTIER_LIST.append((move_value,new_node))
-            IS_FOUND = is_equal(new_node.board,SOLUTION)    
-            #IS_FOUND = WHILE_COUNT > 30000
-            if(IS_FOUND):
-                print("WHILE_COUNT: ", WHILE_COUNT)
-                print("AWESOME")
-                print_parents(new_node)
-                return True                       
         if FRONTIER_LIST:
             FRONTIER_LIST_LEN = len(FRONTIER_LIST)
-            cur_fr_list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
-            cur_node = cur_fr_list_element[1]
+            list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
+            cur_node = list_element[1]
+            NODE_VISITED += 1
+            IS_FOUND = is_equal(cur_node.board,SOLUTION)
+            IS_FOUND = WHILE_COUNT > 400
+            if(IS_FOUND):
+                print("------------------------------------------------------------------------")
+                print("WHILE_COUNT: ", WHILE_COUNT)
+                print("“Optimum solution found.”")
+                print_parents(cur_node)
+                print("Total Run Time: ",time()-start)
+                print("Total Nodes Expanded: ",len(FRONTIER_LIST))
+                print("Node Visited: ",NODE_VISITED)
+                return True
+        else:
+            print("NOTHING LEFT BEHIND")
+            cur_node = None
+            return True
+        WHILE_COUNT += 1
+
+def ids(cur_node,point_table):
+    pass
+
+def dfs_rand(cur_node):
+    pass
+
+def dfs_spec(cur_node):
+    NODE_VISITED = 1
+    FRONTIER_LIST = [("flag",cur_node)]
+    WHILE_COUNT = 0
+    start = time()
+    SUB_OPTIMAL = cur_node
+    while FRONTIER_LIST:
+        IS_SUB = (cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL))
+        if(IS_SUB):
+            SUB_OPTIMAL = cur_node
+        IS_TIME_OUT = time() > TIME_LIMIT +  start
+        if(IS_TIME_OUT):
+            print("TIME IS OUT")
+            print("Sub optimal solution found.”")
+            print_parents(SUB_OPTIMAL)
+            print("Total Run Time: ",time()-start)
+            print("Total Nodes Expanded: ",len(FRONTIER_LIST))
+            print("Node Visited: ",NODE_VISITED)            
+            break
+        if(WHILE_COUNT%10 == 0):
+            print("Tur: ",WHILE_COUNT)
+        if FRONTIER_LIST[0] =="flag":
+            FRONTIER_LIST.pop(0)
+        move_list = list_possible_moves(cur_node.board)
+        SUB_FRONT_LIST = []
+        for new_states in move_list:
+            peg_x, peg_y, way = int(new_states[0]),int(new_states[1]),new_states[2]
+            new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
+            move_value = man_dist(new_board)
+            new_node = MyNode(new_board,cur_node,count_depth(cur_node)+1,count_pegs(cur_node))
+            SUB_FRONT_LIST.append((move_value,new_node))
+        SUB_FRONT_LIST.sort(key=itemgetter(0))
+        for everything in SUB_FRONT_LIST:
+            FRONTIER_LIST.append(everything)
+        if FRONTIER_LIST:
+            FRONTIER_LIST_LEN = len(FRONTIER_LIST)
+            list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
+            cur_node = list_element[1]
+            NODE_VISITED += 1
+            IS_FOUND = is_equal(cur_node.board,SOLUTION) 
+            #IS_FOUND = WHILE_COUNT > 20
+            if(IS_FOUND):
+                print("----------------------------------------------")
+                print("WHILE_COUNT: ", WHILE_COUNT)
+                print("“Optimum solution found.”")
+                print_parents(cur_node)
+                print("Total Run Time: ",time()-start)
+                print("Total Nodes Expanded: ",len(FRONTIER_LIST))
+                print("Node Visited: ",NODE_VISITED)
+                return True
         else:
             print("DONE")
+            print("Total Run Time: ",time()-start)
             cur_node = None
             return True
         WHILE_COUNT +=1
-    print("Count: ",WHILE_COUNT)
