@@ -7,7 +7,7 @@ from time import time
 from operator import itemgetter
 from pprint import pprint 
 
-TIME_LIMIT = 100 #seconds
+TIME_LIMIT = 1 #seconds
 
 def list_possible_moves(board_array_param):
     fun_move_list = []
@@ -143,8 +143,14 @@ def ids_bfs(cur_node,point_table,depth_level_param):
     WHILE_COUNT = 0
     start = time()
     SUB_OPTIMAL = cur_node
+    
     while FRONTIER_LIST:
         if(cur_node.depth_level > depth_level_param):
+            print("Depth ",cur_node.depth_level," completed.")
+            print("Total Run Time: ",time()-start)    
+            print("Frontier Length: ",len(FRONTIER_LIST))
+            print("Node Visited: ",NODE_COUNT)    
+            print("While Count:",WHILE_COUNT)        
             return SUB_OPTIMAL
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
@@ -161,10 +167,9 @@ def ids_bfs(cur_node,point_table,depth_level_param):
             break
         if(WHILE_COUNT%10 == 0):
             print("Tur: ",WHILE_COUNT)
-        if FRONTIER_LIST[0] =="flag":
-            FRONTIER_LIST.pop(0)
+
         move_list = list_possible_moves(cur_node.board)
-        move_list.sort(reverse=True)
+        move_list.sort()
         NODE_COUNT += int(len(move_list))
         SUB_FRONT_LIST = []
         for new_states in move_list:
@@ -178,11 +183,13 @@ def ids_bfs(cur_node,point_table,depth_level_param):
         for everything in SUB_FRONT_LIST:
             FRONTIER_LIST.append(everything)
         if FRONTIER_LIST:
+            if (FRONTIER_LIST[0][0] == "flag"):
+                FRONTIER_LIST.pop(0)
             FRONTIER_LIST_LEN = len(FRONTIER_LIST)
             list_element = FRONTIER_LIST.pop(0)
             cur_node = list_element[1]
             IS_FOUND = is_equal(cur_node.board,SOLUTION)
-            #IS_FOUND = WHILE_COUNT > 400
+            #IS_FOUND = WHILE_COUNT > 5
             if(IS_FOUND):
                 print("------------------------------------------------------------------------")
                 print("WHILE_COUNT: ", WHILE_COUNT)
@@ -210,6 +217,12 @@ def dfs(cur_node,point_table):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
+        if(WHILE_COUNT > 2):
+            break
+        print(*FRONTIER_LIST,sep="\n")
+        print()
+        print(cur_node)
+        print()
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
@@ -225,7 +238,7 @@ def dfs(cur_node,point_table):
             break
         if(WHILE_COUNT%10 == 0):
             print("Tur: ",WHILE_COUNT)
-        if FRONTIER_LIST[0] =="flag":
+        if FRONTIER_LIST[0][0] =="flag":
             FRONTIER_LIST.pop(0)
         move_list = list_possible_moves(cur_node.board)
         move_list.sort(reverse=True)
@@ -240,6 +253,9 @@ def dfs(cur_node,point_table):
             SUB_FRONT_LIST.append((move_value,new_node))
         for everything in SUB_FRONT_LIST:
             FRONTIER_LIST.append(everything)
+        print("\n\n-1-\n")
+        print(*FRONTIER_LIST,sep="\n")
+        print("\n\n-2-\n")
         if FRONTIER_LIST:
             FRONTIER_LIST_LEN = len(FRONTIER_LIST)
             list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
@@ -263,8 +279,18 @@ def dfs(cur_node,point_table):
         WHILE_COUNT += 1
 
 def ids(cur_node,point_table):
+    start = time()
     SUB_OPTIMAL_SOL = cur_node
-    for iteration in range(32):
+    for iteration in range(1):
+        IS_TIME_OUT = time() > TIME_LIMIT +  start
+        if(IS_TIME_OUT):
+            print("TIME IS OUT")
+            print("While Count:",WHILE_COUNT)
+            print("Sub optimal solution found.”")
+            print_parents(SUB_OPTIMAL)
+            print("Total Run Time: ",time()-start)
+            print("Frontier Length: ",len(FRONTIER_LIST))
+            print("Node Visited: ",NODE_COUNT)    
         SUB_OPTIMAL_SOL = ids_bfs(cur_node,point_table,iteration)
     return True
 
