@@ -29,7 +29,7 @@ if __name__ == "__main__":
         result_3 = ids(initial_node,POINT_TABLE,TIME_LIMIT)
     elif(method == 4): #DONE
         result_4 = dfs_rand(initial_node,POINT_TABLE,TIME_LIMIT)
-    elif(method == 5): 
+    elif(method == 5): #DONE #TODO
         result_5 = dfs_spec(initial_node,TIME_LIMIT)
     else:
         print("\n1-) Bread First Search\n2-) Depth First Search\n3-) Iterative Deepening Search\n4-) Depth First with Random")
