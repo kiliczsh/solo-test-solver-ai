@@ -21,7 +21,7 @@ if __name__ == "__main__":
     else: TIME_LIMIT=3600 #s
 
     method = int(argv[1])
-    if(method == 1): #DONE
+    if(method == 1): 
         result_1 = bfs(initial_node,POINT_TABLE,TIME_LIMIT)
     elif(method == 2): #DONE
         result_2 = dfs(initial_node,POINT_TABLE,TIME_LIMIT)
@@ -29,7 +29,7 @@ if __name__ == "__main__":
         result_3 = ids(initial_node,POINT_TABLE,TIME_LIMIT)
     elif(method == 4): #DONE
         result_4 = dfs_rand(initial_node,POINT_TABLE,TIME_LIMIT)
-    elif(method == 5): #DONE
+    elif(method == 5): 
         result_5 = dfs_spec(initial_node,TIME_LIMIT)
     else:
         print("\n1-) Bread First Search\n2-) Depth First Search\n3-) Iterative Deepening Search\n4-) Depth First with Random")

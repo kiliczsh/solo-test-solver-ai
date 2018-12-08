@@ -13,7 +13,7 @@ def man_dist(board_array):
                         for l in range(len(board_array)):
                             if (int(board_array[k, l]) == 1):
                                 dist += abs(i - k) + abs(j - l)
-        ret_val = dist / (2 * peg_count)
+        ret_val = int(dist / (2 * peg_count))
     else:
         ret_val = 999
     return ret_val

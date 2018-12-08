@@ -1,14 +1,13 @@
 import numpy as np 
+import signal,zmq
 import board
-from heuristic import man_dist 
 from item import INITIAL,LIMIT,SAMPLE,SOLUTION,is_equal,get_extra,count_depth,count_pegs
+from operator import itemgetter
+from heuristic import man_dist 
+from random import shuffle
+from pprint import pprint
 from mynode import MyNode
 from time import time
-from operator import itemgetter
-from pprint import pprint
-from random import shuffle
-import signal
-import zmq
 
 
 def list_possible_moves(board_array_param):
@@ -381,7 +380,7 @@ def dfs_spec(cur_node,time_limit):
             if(move_value != 999):
                 new_node = MyNode(new_board,cur_node,(count_depth(cur_node)+1),count_pegs(cur_node))
                 SUB_FRONT_LIST.append((move_value,new_node))
-        SUB_FRONT_LIST.sort(key=itemgetter(0))
+        SUB_FRONT_LIST.sort(key=itemgetter(0),reverse=True)
         for everything in SUB_FRONT_LIST:
             FRONTIER_LIST.append(everything)
         if FRONTIER_LIST:
@@ -389,7 +388,7 @@ def dfs_spec(cur_node,time_limit):
             list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
             cur_node = list_element[1]
             IS_FOUND = is_equal(cur_node.board,SOLUTION) 
-            #IS_FOUND = WHILE_COUNT > 200
+            #IS_FOUND = WHILE_COUNT > 2
             if(IS_FOUND):
                 print("Optimum solution found.")
                 print("Total Run Time: ",time()-start)
