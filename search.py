@@ -87,18 +87,15 @@ def bfs(cur_node,point_table,time_limit):
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
-        IS_TIME_OUT = time() > TIME_LIMIT +  start        
+        IS_TIME_OUT = int(time()) > int(TIME_LIMIT) +  int(start)     
         if(IS_TIME_OUT):
             print("TIME IS OUT")
-            print("While Count:",WHILE_COUNT)
-            print("Sub optimal solution found.”")
+            print("Sub optimal solution found.")
             print("Total Run Time: ",time() - start)
             print("Frontier Length: ",len(FRONTIER_LIST))
             print("Node Visited: ",NODE_COUNT)    
             print_parents(SUB_OPTIMAL)
             break
-        if(WHILE_COUNT%10 == 0):
-            print("Tur: ",WHILE_COUNT)
         if FRONTIER_LIST[0][0] =="flag":
             FRONTIER_LIST.pop(0)
         move_list = list_possible_moves(cur_node.board)
@@ -121,8 +118,7 @@ def bfs(cur_node,point_table,time_limit):
             cur_node = list_element[1]
             IS_FOUND = is_equal(cur_node.board,SOLUTION)
             if(IS_FOUND):
-                print("WHILE_COUNT: ", WHILE_COUNT)
-                print("“Optimum solution found.”")
+                print("Optimum solution found.")
                 print("Total Run Time: ",time()-start)
                 print("Frontier Length: ",len(FRONTIER_LIST))
                 print("Node Visited: ",NODE_COUNT)
@@ -148,11 +144,11 @@ def dfs(cur_node,point_table,time_limit):
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
-        IS_TIME_OUT = time() > TIME_LIMIT +  start        
+        IS_TIME_OUT = int(time()) > int(TIME_LIMIT) +  int(start)        
         if(IS_TIME_OUT):
             print("TIME IS OUT")
             print("While Count:",WHILE_COUNT)
-            print("Sub optimal solution found.”")
+            print("Sub optimal solution found.")
             print("Total Run Time: ",time()-start)
             print("Total Nodes Expanded: ",len(FRONTIER_LIST))
             print("Node Visited: ",NODE_COUNT)
@@ -181,9 +177,7 @@ def dfs(cur_node,point_table,time_limit):
             cur_node = list_element[1]
             IS_FOUND = is_equal(cur_node.board,SOLUTION)
             if(IS_FOUND):
-                print("------------------------------------------------------------------------")
-                print("WHILE_COUNT: ", WHILE_COUNT)
-                print("“Optimum solution found.”")
+                print("Optimum solution found.")
                 print("Total Run Time: ",time()-start)
                 print("Frontier Length: ",len(FRONTIER_LIST))
                 print("Node Visited: ",NODE_COUNT)
@@ -207,16 +201,15 @@ def ids(cur_node,point_table,time_limit):
         print("Iterative Deepening Search")
         print("Time Limit is ",time_limit," seconds.")
         SUB_OPTIMAL_SOL = cur_node
-        for iteration in range(8):
+        for iteration in range(32):
             IS_TIME_OUT = time() > time_limit +  start
             new_time_limit = time_limit - (time()-start)
             if(IS_TIME_OUT):
                 print("TIME IS OUT")
                 print("Sub optimal solution found.”")
                 print("Total Run Time: ",time()-start)
-                print("Frontier Length: ",len(FRONTIER_LIST))
-                print("Node Visited: ",NODE_COUNT)    
                 print_parents(SUB_OPTIMAL_SOL)
+                break
             SUB_OPTIMAL_SOL = ids_bfs(cur_node,point_table,iteration,new_time_limit)
     except KeyboardInterrupt:
         print_parents(SUB_OPTIMAL_SOL)
@@ -244,10 +237,10 @@ def ids_bfs(cur_node,point_table,depth_level_param,time_limit):
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
-        IS_TIME_OUT = time() > TIME_LIMIT +  start        
+        IS_TIME_OUT = int(time()) > int(TIME_LIMIT) +  int(start)      
         if(IS_TIME_OUT):
             print("TIME IS OUT")
-            print("Sub optimal solution found.”")
+            print("Sub optimal solution found.")
             print("Total Run Time: ",time()-start)
             print("Frontier Length: ",len(FRONTIER_LIST))
             print("Node Visited: ",NODE_COUNT)    
@@ -298,15 +291,12 @@ def dfs_rand(cur_node,point_table,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
-        #print("Time passed ",int(time() - start)," seconds.")
-        #print(len(FRONTIER_LIST))
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
         IS_TIME_OUT = int(time()) > int(TIME_LIMIT +  start)   
         if(IS_TIME_OUT):
             print("TIME IS OUT")
-            print("While Count:",WHILE_COUNT)
             print("Sub optimal solution found.")
             print("Total Run Time: ",time()-start)
             print("Total Nodes Expanded: ",len(FRONTIER_LIST))
@@ -337,8 +327,6 @@ def dfs_rand(cur_node,point_table,time_limit):
             cur_node = list_element[1]
             IS_FOUND = is_equal(cur_node.board,SOLUTION)
             if(IS_FOUND):
-                print("------------------------------------------------------------------------")
-                print("WHILE_COUNT: ", WHILE_COUNT)
                 print("“Optimum solution found.”")
                 print("Total Run Time: ",time()-start)
                 print("Frontier Length: ",len(FRONTIER_LIST))
@@ -365,22 +353,23 @@ def dfs_spec(cur_node,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
+        #print(*FRONTIER_LIST,sep="\n")
+        #print("Frontier Length: ",len(FRONTIER_LIST))
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
-        IS_TIME_OUT = time() > TIME_LIMIT +  start
+        IS_TIME_OUT = int(time()) > int(TIME_LIMIT) +  int(start)
         if(IS_TIME_OUT):
             print("TIME IS OUT")
-            print("While Count:",WHILE_COUNT)
-            print("Sub optimal solution found.”")
+            print("Sub optimal solution found.")
             print("Total Run Time: ",time()-start)
             print("Frontier Length: ",len(FRONTIER_LIST))
             print("Node Visited: ",NODE_COUNT)            
             print_parents(SUB_OPTIMAL)
             break
-        #if(WHILE_COUNT%10 == 0):
-        #    print("Tur: ",WHILE_COUNT)
-        if FRONTIER_LIST[0] =="flag":
+        if(WHILE_COUNT%1000 == 0):
+            print("Tur: ",WHILE_COUNT)
+        if FRONTIER_LIST[0][0] =="flag":
             FRONTIER_LIST.pop(0)
         move_list = list_possible_moves(cur_node.board)
         NODE_COUNT += int(len(move_list))
@@ -389,8 +378,9 @@ def dfs_spec(cur_node,time_limit):
             peg_x, peg_y, way = int(new_states[0]),int(new_states[1]),new_states[2]
             new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
             move_value = man_dist(new_board)
-            new_node = MyNode(new_board,cur_node,(count_depth(cur_node)+1),count_pegs(cur_node))
-            SUB_FRONT_LIST.append((move_value,new_node))
+            if(move_value != 999):
+                new_node = MyNode(new_board,cur_node,(count_depth(cur_node)+1),count_pegs(cur_node))
+                SUB_FRONT_LIST.append((move_value,new_node))
         SUB_FRONT_LIST.sort(key=itemgetter(0))
         for everything in SUB_FRONT_LIST:
             FRONTIER_LIST.append(everything)
@@ -399,11 +389,9 @@ def dfs_spec(cur_node,time_limit):
             list_element = FRONTIER_LIST.pop(FRONTIER_LIST_LEN-1)
             cur_node = list_element[1]
             IS_FOUND = is_equal(cur_node.board,SOLUTION) 
-            #IS_FOUND = WHILE_COUNT > 20
+            #IS_FOUND = WHILE_COUNT > 200
             if(IS_FOUND):
-                print("----------------------------------------------")
-                print("WHILE_COUNT: ", WHILE_COUNT)
-                print("“Optimum solution found.”")
+                print("Optimum solution found.")
                 print("Total Run Time: ",time()-start)
                 print("Frontier Length: ",len(FRONTIER_LIST))
                 print("Node Visited: ",NODE_COUNT)
