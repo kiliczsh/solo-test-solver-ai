@@ -52,13 +52,14 @@ MY_POINT_TABLE_TWO = np.array([[999, 999,   1,   2,   3, 999, 999],
                                [ 19,  28,  17,  12,  11,  10,   9],
                                [999, 999,  16,  31,  27, 999, 999],
                                [999, 999,  15,  14,  13, 999, 999]])
-
+# comparison of np.arrays
 def is_equal(arr_1,arr_2):
     if(np.array_equal(arr_1,arr_2)):
         return True
     else:
         return False
 
+# returns new coordinates of peg moved
 def get_extra(x,y,direction):
     if( (direction == "s") ):
         if(x+2 < 7 ):
@@ -73,7 +74,7 @@ def get_extra(x,y,direction):
         if(y-2 >= 0):
             return x,y-2
 
-
+# get depth of a solution
 def count_depth(new_node):
     depth_level = 0
     parent_node = new_node.parent
@@ -82,6 +83,7 @@ def count_depth(new_node):
         parent_node = parent_node.parent
     return depth_level
 
+#get number of pegs on current solution
 def count_pegs(new_node):
     board = new_node.board
     peg_count = 0

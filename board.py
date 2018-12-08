@@ -1,8 +1,8 @@
 import numpy as np
 import path 
 
+# board size
 LIMIT = 7
-
 
 # make moves with given coordinates and directions
 def make_move(board_array_param,x,y,direction):

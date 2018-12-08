@@ -1,5 +1,5 @@
 import numpy as np 
-import signal,zmq
+import zmq
 import board
 from item import INITIAL,LIMIT,SAMPLE,SOLUTION,is_equal,get_extra,count_depth,count_pegs
 from operator import itemgetter
@@ -378,8 +378,6 @@ def dfs_spec(cur_node,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
-        #print(*FRONTIER_LIST,sep="\n")
-        #print("Frontier Length: ",len(FRONTIER_LIST))
         IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node

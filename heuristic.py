@@ -1,24 +1,28 @@
 import numpy as np
 
+# manhattan distance
 def man_dist(board_array):
     dist = 0
     peg_count = 0
     ret_val = 999
-    if(not is_crying(np.copy(board_array))):
-        for i in range(len(board_array)):
-            for j in range(len(board_array)):
-                if (int(board_array[i, j]) == 1):
-                    peg_count += 1
-                    for k in range(len(board_array)):
-                        for l in range(len(board_array)):
-                            if (int(board_array[k, l]) == 1):
-                                dist += abs(i - k) + abs(j - l)
-        ret_val = int(dist / (2 * peg_count))
-    else:
-        ret_val = 999
+    # to prevent checking not movable pegs
+    #if(not is_crying(np.copy(board_array))): 
+    for i in range(len(board_array)):
+        for j in range(len(board_array)):
+            if (int(board_array[i, j]) == 1):
+                peg_count += 1
+                for k in range(len(board_array)):
+                    for l in range(len(board_array)):
+                        if (int(board_array[k, l]) == 1):
+                            dist += abs(i - k) + abs(j - l)
+    ret_val = int(dist / (2 * peg_count))
+    #else:
+    #    ret_val = 999
     return ret_val
 
+#checks not movable pegs
 def is_crying(board_array):
+    ret_val = False
     for i in range(len(board_array)):
         for j in range(len(board_array)):
             IS_BAN = (i==0 or i==1 or i==5 or i==6) and (j==0 or j==1 or j==5 or j==6)
@@ -53,7 +57,8 @@ def is_crying(board_array):
                         left = int(board_array[i, j-1])
                 if(cur_sqr == 1):
                     if(left != 1 and right!=1 and up!=1 and down!=1): 
-                        return True
+                        ret_val = True
+    return ret_val
 
 
                 
