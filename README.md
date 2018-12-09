@@ -8,7 +8,7 @@ Solo Test AI solver
 ``` pip3 install -r requirements.txt```
 
 ##### list of methods
-1-) Bread First Search\
+1-) Breadth First Search\
 2-) Depth First Search\
 3-) Iterative Deepening Search\
 4-) Depth First with Random\

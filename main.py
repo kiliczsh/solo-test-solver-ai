@@ -1,6 +1,6 @@
 import board
 import heuristic
-from search import bfs,dfs,ids,dfs_rand,dfs_spec,ids_bfs
+from search import bfs,dfs,ids,dfs_rand,dfs_spec,ids_dfs
 import numpy as np
 from mynode import MyNode
 from item import INITIAL,DIRECTION,POINT_TABLE
@@ -30,5 +30,5 @@ if __name__ == "__main__":
     elif(method == 5):
         result_5 = dfs_spec(initial_node,TIME_LIMIT)
     else:
-        print("\n1-) Bread First Search\n2-) Depth First Search\n3-) Iterative Deepening Search\n4-) Depth First with Random")
+        print("\n1-) Breadth First Search\n2-) Depth First Search\n3-) Iterative Deepening Search\n4-) Depth First with Random")
         print("5-) Depth First with Heuristic")

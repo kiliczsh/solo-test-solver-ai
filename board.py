@@ -1,6 +1,4 @@
 import numpy as np
-import path 
-
 # board size
 LIMIT = 7
 
@@ -86,12 +84,6 @@ class Board:
                         flag = False
         return flag
         
-    # uses game1 in path module and plays it
-    def play_game(self):
-        game_path = path.Path()
-        game1 = game_path.game1() #TODO
-        for mov in game1:
-            self.make_move(mov[0],mov[1],mov[2])
     
 
 

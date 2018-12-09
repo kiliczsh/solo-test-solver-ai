@@ -7,15 +7,14 @@ from heuristic import man_dist
 from random import shuffle
 from pprint import pprint
 from mynode import MyNode
-from time import time
+from time import time,sleep
 import psutil
 
+# get list of moves in a notation for given board situation
 def list_possible_moves(board_array_param):
     fun_move_list = []
     for i in range(LIMIT):
         for j in range(LIMIT):
-            #print(type(board_array_param))
-            #print(board_array_param)
             current_square = int(board_array_param[i,j])
             bannned_square = (i==0 or i==1 or i==5 or i==6) and (j==0 or j==1 or j==5 or j==6)
             if(not bannned_square):
@@ -30,7 +29,6 @@ def list_possible_moves(board_array_param):
                     except NameError:
                         right_square = None
                     
-                    
                     try:
                         left_square = None
                         if( j-2 >= 0):
@@ -40,7 +38,6 @@ def list_possible_moves(board_array_param):
                             fun_move_list.append((i,j,"w"))
                     except NameError:
                         left_square = None
-                    
                     
                     try:
                         down_square = None
@@ -52,7 +49,6 @@ def list_possible_moves(board_array_param):
                     except NameError:
                         down_square = None
             
-
                     try:
                         up_square = None
                         if(i-2 >= 0):
@@ -65,6 +61,7 @@ def list_possible_moves(board_array_param):
     
     return fun_move_list
 
+# print all ancestors of sub or optimal solution
 def print_parents(sol_node):
     print(sol_node.depth_level)
     pprint(sol_node.board)
@@ -79,7 +76,7 @@ def bfs(cur_node,point_table,time_limit):
     socket.bind("tcp://*:5558")
     try:  
         NODE_COUNT = 1
-        print("Bread First Search")
+        print("Breadth First Search")
         print("Time Limit is ",time_limit," seconds.")
         TIME_LIMIT = time_limit
         FRONTIER_LIST = [("flag",cur_node)]
@@ -87,6 +84,8 @@ def bfs(cur_node,point_table,time_limit):
         start = time()
         SUB_OPTIMAL = cur_node
         while FRONTIER_LIST:
+            if(WHILE_COUNT%100 ==0 ):
+                print("Tur: ", WHILE_COUNT)
             IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
             if(IS_SUB):
                 SUB_OPTIMAL = cur_node
@@ -112,6 +111,7 @@ def bfs(cur_node,point_table,time_limit):
             move_list = list_possible_moves(cur_node.board)
             move_list.sort(reverse=True)
             NODE_COUNT += int(len(move_list))
+            # create new boards from move_list and add to SUB_FRONT_LIST
             SUB_FRONT_LIST = []
             for new_states in move_list:
                 peg_x,peg_y, way = int(new_states[0]),int(new_states[1]),new_states[2]
@@ -121,9 +121,11 @@ def bfs(cur_node,point_table,time_limit):
                 new_node = MyNode(new_board,cur_node,(count_depth(cur_node)+1),count_pegs(cur_node))
                 SUB_FRONT_LIST.append((move_value,new_node))
             SUB_FRONT_LIST.sort(key=itemgetter(0))
+            # add all new boards in an order to FRONTIER_LIST
             for everything in SUB_FRONT_LIST:
                 FRONTIER_LIST.append(everything)
             if FRONTIER_LIST:
+                # choose new board node to continue searching and check if is it a solution
                 FRONTIER_LIST_LEN = len(FRONTIER_LIST)
                 list_element = FRONTIER_LIST.pop(0)
                 cur_node = list_element[1]
@@ -166,7 +168,7 @@ def dfs(cur_node,point_table,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
-        IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
+        IS_SUB = (cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
         IS_TIME_OUT = int(time()) > int(TIME_LIMIT) +  int(start)        
@@ -194,6 +196,7 @@ def dfs(cur_node,point_table,time_limit):
             new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
             new_node = MyNode(new_board,cur_node,(count_depth(cur_node)+1),count_pegs(cur_node))
             SUB_FRONT_LIST.append((move_value,new_node))
+        SUB_FRONT_LIST.sort(key=itemgetter(0))
         for everything in SUB_FRONT_LIST:
             FRONTIER_LIST.append(everything)
         if FRONTIER_LIST:
@@ -226,11 +229,13 @@ def ids(cur_node,point_table,time_limit):
         print("Iterative Deepening Search")
         print("Time Limit is ",time_limit," seconds.")
         SUB_OPTIMAL_SOL = cur_node
-        for iteration in range(32):
+        # for each depth level make depth limited bread
+        for iteration in range(33):
             IS_TIME_OUT = time() > time_limit +  start
             new_time_limit = time_limit - (time()-start)
+            print("----------------------------------------------")
             if(IS_TIME_OUT):
-                print("TIME IS OUT")
+                print("TIME IS OUT FOR IDS")
                 print("Sub optimal solution found.”")
                 print("Total Run Time: ",time()-start)
                 print_parents(SUB_OPTIMAL_SOL)
@@ -245,7 +250,7 @@ def ids(cur_node,point_table,time_limit):
 
 def ids_bfs(cur_node,point_table,depth_level_param,time_limit): 
     NODE_COUNT = 1
-    print("IDS - Bread First Search For Depth: ",depth_level_param)
+    print("IDS - DFS For Depth: ",depth_level_param)
     print("Time Limit is ",time_limit," seconds.")
     TIME_LIMIT = time_limit
     FRONTIER_LIST = [("flag",cur_node)]
@@ -253,26 +258,33 @@ def ids_bfs(cur_node,point_table,depth_level_param,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
-        if(cur_node.depth_level > depth_level_param):
+        IS_DEPTH_GOAL = cur_node.depth_level > depth_level_param
+        if(IS_DEPTH_GOAL):
+            print("Depth limit is over.")
             print("Depth ",cur_node.depth_level - 1 ," completed.")
-            print("Total Run Time: ",time()-start)    
+            print("Total Run Time: ",time()-start)
             print("Frontier Length: ",len(FRONTIER_LIST))
-            print("Node Visited: ",NODE_COUNT)       
+            print("Node Visited: ",NODE_COUNT)
+            print()
             return SUB_OPTIMAL
-        IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
+        IS_SUB = (cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
         IS_TIME_OUT = int(time()) > int(TIME_LIMIT) +  int(start)      
         if(IS_TIME_OUT):
             print("TIME IS OUT")
             print("Sub optimal solution found.")
+            print("Sub optimal solution located at depth: ",SUB_OPTIMAL.depth_level)
             print("Total Run Time: ",time()-start)
             print("Frontier Length: ",len(FRONTIER_LIST))
-            print("Node Visited: ",NODE_COUNT)    
-            print_parents(SUB_OPTIMAL)
+            print("Node Visited: ",NODE_COUNT)
+            #print_parents(SUB_OPTIMAL)
+            print()
             return SUB_OPTIMAL
+        if (FRONTIER_LIST[0][0] == "flag"):
+            FRONTIER_LIST.pop(0)
         move_list = list_possible_moves(cur_node.board)
-        move_list.sort()
+        move_list.sort(reverse=True)
         NODE_COUNT += int(len(move_list))
         SUB_FRONT_LIST = []
         for new_states in move_list:
@@ -286,22 +298,23 @@ def ids_bfs(cur_node,point_table,depth_level_param,time_limit):
         for everything in SUB_FRONT_LIST:
             FRONTIER_LIST.append(everything)
         if FRONTIER_LIST:
-            if (FRONTIER_LIST[0][0] == "flag"):
-                FRONTIER_LIST.pop(0)
             FRONTIER_LIST_LEN = len(FRONTIER_LIST)
             list_element = FRONTIER_LIST.pop(0)
             cur_node = list_element[1]
-            IS_FOUND = is_equal(cur_node.board,SOLUTION)
+            IS_FOUND = is_equal(cur_node.board,SOLUTION) and (cur_node.depth_level >= 31)
             if(IS_FOUND):
                 print("Optimum solution found for depth: ",cur_node.depth_level - 1)
                 print("Total Run Time: ",time()-start)
                 print("Frontier Length: ",len(FRONTIER_LIST))
                 print("Node Visited: ",NODE_COUNT)
                 print_parents(cur_node)
-                return SUB_OPTIMAL
+                print()
+                return cur_node
         else:
             print("NOTHING LEFT BEHIND")
             print("Total Run Time: ",time()-start)
+            print("Frontier Length: ",len(FRONTIER_LIST))
+            print("Node Visited: ",NODE_COUNT)
             cur_node = None
             return SUB_OPTIMAL
         WHILE_COUNT += 1
@@ -316,7 +329,7 @@ def dfs_rand(cur_node,point_table,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
-        IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
+        IS_SUB = (cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
         IS_TIME_OUT = int(time()) > int(TIME_LIMIT +  start)   
@@ -324,12 +337,10 @@ def dfs_rand(cur_node,point_table,time_limit):
             print("TIME IS OUT")
             print("Sub optimal solution found.")
             print("Total Run Time: ",time()-start)
-            print("Total Nodes Expanded: ",len(FRONTIER_LIST))
+            print("Frontier Length: ",len(FRONTIER_LIST))
             print("Node Visited: ",NODE_COUNT)
             print_parents(SUB_OPTIMAL)
             break
-        if(WHILE_COUNT%10 == 0):
-            print("Tur: ",WHILE_COUNT)
         if FRONTIER_LIST[0][0] =="flag":
             FRONTIER_LIST.pop(0)
         move_list = list_possible_moves(cur_node.board)
@@ -378,7 +389,7 @@ def dfs_spec(cur_node,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
-        IS_SUB = not((cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL)))
+        IS_SUB = (cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
         IS_TIME_OUT = int(time()) > int(TIME_LIMIT) +  int(start)
@@ -390,21 +401,19 @@ def dfs_spec(cur_node,time_limit):
             print("Node Visited: ",NODE_COUNT)            
             print_parents(SUB_OPTIMAL)
             break
-        if(WHILE_COUNT%1000 == 0):
-            print("Tur: ",WHILE_COUNT)
         if FRONTIER_LIST[0][0] =="flag":
             FRONTIER_LIST.pop(0)
         move_list = list_possible_moves(cur_node.board)
+        move_list.sort(reverse=True)
         NODE_COUNT += int(len(move_list))
         SUB_FRONT_LIST = []
         for new_states in move_list:
             peg_x, peg_y, way = int(new_states[0]),int(new_states[1]),new_states[2]
             new_board = board.make_move(np.copy(cur_node.board),peg_x,peg_y,way)
             move_value = man_dist(new_board)
-            if(move_value != 999):
-                new_node = MyNode(new_board,cur_node,(count_depth(cur_node)+1),count_pegs(cur_node))
-                SUB_FRONT_LIST.append((move_value,new_node))
-        SUB_FRONT_LIST.sort(key=itemgetter(0),reverse=True)
+            new_node = MyNode(new_board,cur_node,(count_depth(cur_node)+1),count_pegs(cur_node))
+            SUB_FRONT_LIST.append((move_value,new_node))
+        SUB_FRONT_LIST.sort(key=itemgetter(0))
         for everything in SUB_FRONT_LIST:
             FRONTIER_LIST.append(everything)
         if FRONTIER_LIST:

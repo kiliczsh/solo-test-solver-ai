@@ -3,7 +3,7 @@ Time Limit is  3600  seconds.
 TIME IS OUT
 Sub optimal solution found.
 Total Run Time:  3600.5181605815887
-Total Nodes Expanded:  121
+Frontier Length:  121
 Node Visited:  30013209
 25
 array([[2, 2, 0, 1, 0, 2, 2],
