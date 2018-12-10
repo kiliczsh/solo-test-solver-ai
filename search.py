@@ -1,73 +1,15 @@
 import numpy as np 
-import zmq
+import psutil
 import board
-from item import INITIAL,LIMIT,SAMPLE,SOLUTION,is_equal,get_extra,count_depth,count_pegs
+import zmq
+from item import INITIAL,LIMIT,SOLUTION,is_equal,get_extra,count_depth,count_pegs
+from item import list_possible_moves,print_parents
 from operator import itemgetter
 from heuristic import man_dist 
 from random import shuffle
 from pprint import pprint
 from mynode import MyNode
 from time import time,sleep
-import psutil
-
-# get list of moves in a notation for given board situation
-def list_possible_moves(board_array_param):
-    fun_move_list = []
-    for i in range(LIMIT):
-        for j in range(LIMIT):
-            current_square = int(board_array_param[i,j])
-            bannned_square = (i==0 or i==1 or i==5 or i==6) and (j==0 or j==1 or j==5 or j==6)
-            if(not bannned_square):
-                if(current_square == 1):
-                    try:
-                        right_square = None
-                        if(j+2 < LIMIT ):
-                            right_square = int(board_array_param[i,j+2])
-                            gap_peg = int(board_array_param[i,j+1])
-                        if(right_square == 0 and gap_peg == 1):
-                            fun_move_list.append((i,j,"e"))
-                    except NameError:
-                        right_square = None
-                    
-                    try:
-                        left_square = None
-                        if( j-2 >= 0):
-                            left_square = int(board_array_param[i,j-2])
-                            gap_peg = int(board_array_param[i,j-1])
-                        if(left_square == 0 and gap_peg == 1):
-                            fun_move_list.append((i,j,"w"))
-                    except NameError:
-                        left_square = None
-                    
-                    try:
-                        down_square = None
-                        if(i+2 < LIMIT):
-                            down_square = int(board_array_param[i+2,j])
-                            gap_peg = int(board_array_param[i+1,j])
-                        if(down_square == 0 and gap_peg == 1):
-                            fun_move_list.append((i,j,"s"))
-                    except NameError:
-                        down_square = None
-            
-                    try:
-                        up_square = None
-                        if(i-2 >= 0):
-                            up_square = int(board_array_param[i-2,j])
-                            gap_peg = int(board_array_param[i-1,j])
-                        if(up_square == 0 and gap_peg == 1 ):
-                            fun_move_list.append((i,j,"n"))
-                    except NameError:
-                        up_square = None
-    
-    return fun_move_list
-
-# print all ancestors of sub or optimal solution
-def print_parents(sol_node):
-    print(sol_node.depth_level)
-    pprint(sol_node.board)
-    parent_node = sol_node.parent
-    if (parent_node != None):
-        print_parents(parent_node)
 
 
 def bfs(cur_node,point_table,time_limit):
@@ -168,6 +110,11 @@ def dfs(cur_node,point_table,time_limit):
     start = time()
     SUB_OPTIMAL = cur_node
     while FRONTIER_LIST:
+    
+        if(count_pegs(cur_node) <= 1):
+            print_parents(cur_node)
+            print("done")
+            return
         IS_SUB = (cur_node.depth_level > SUB_OPTIMAL.depth_level) and (count_pegs(cur_node) < count_pegs(SUB_OPTIMAL))
         if(IS_SUB):
             SUB_OPTIMAL = cur_node
@@ -181,8 +128,6 @@ def dfs(cur_node,point_table,time_limit):
             print("Node Visited: ",NODE_COUNT)
             print_parents(SUB_OPTIMAL)
             break
-        if(WHILE_COUNT%10 == 0):
-            print("Tur: ",WHILE_COUNT)
         if FRONTIER_LIST[0][0] =="flag":
             FRONTIER_LIST.pop(0)
         move_list = list_possible_moves(cur_node.board)
@@ -250,7 +195,7 @@ def ids(cur_node,point_table,time_limit):
 
 def ids_bfs(cur_node,point_table,depth_level_param,time_limit): 
     NODE_COUNT = 1
-    print("IDS - DFS For Depth: ",depth_level_param)
+    print("IDS For Depth: ",depth_level_param)
     print("Time Limit is ",time_limit," seconds.")
     TIME_LIMIT = time_limit
     FRONTIER_LIST = [("flag",cur_node)]

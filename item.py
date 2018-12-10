@@ -70,4 +70,62 @@ def count_pegs(new_node):
             if(IS_PEG):
                 peg_count += 1
     return peg_count
-                
+        
+# get list of moves in a notation for given board situation
+def list_possible_moves(board_array_param):
+    fun_move_list = []
+    for i in range(LIMIT):
+        for j in range(LIMIT):
+            current_square = int(board_array_param[i,j])
+            bannned_square = (i==0 or i==1 or i==5 or i==6) and (j==0 or j==1 or j==5 or j==6)
+            if(not bannned_square):
+                if(current_square == 1):
+                    try:
+                        right_square = None
+                        if(j+2 < LIMIT ):
+                            right_square = int(board_array_param[i,j+2])
+                            gap_peg = int(board_array_param[i,j+1])
+                        if(right_square == 0 and gap_peg == 1):
+                            fun_move_list.append((i,j,"e"))
+                    except NameError:
+                        right_square = None
+                    
+                    try:
+                        left_square = None
+                        if( j-2 >= 0):
+                            left_square = int(board_array_param[i,j-2])
+                            gap_peg = int(board_array_param[i,j-1])
+                        if(left_square == 0 and gap_peg == 1):
+                            fun_move_list.append((i,j,"w"))
+                    except NameError:
+                        left_square = None
+                    
+                    try:
+                        down_square = None
+                        if(i+2 < LIMIT):
+                            down_square = int(board_array_param[i+2,j])
+                            gap_peg = int(board_array_param[i+1,j])
+                        if(down_square == 0 and gap_peg == 1):
+                            fun_move_list.append((i,j,"s"))
+                    except NameError:
+                        down_square = None
+            
+                    try:
+                        up_square = None
+                        if(i-2 >= 0):
+                            up_square = int(board_array_param[i-2,j])
+                            gap_peg = int(board_array_param[i-1,j])
+                        if(up_square == 0 and gap_peg == 1 ):
+                            fun_move_list.append((i,j,"n"))
+                    except NameError:
+                        up_square = None
+    
+    return fun_move_list
+
+# print all ancestors of sub or optimal solution
+def print_parents(sol_node):
+    print(sol_node.depth_level)
+    pprint(sol_node.board)
+    parent_node = sol_node.parent
+    if (parent_node != None):
+        print_parents(parent_node)

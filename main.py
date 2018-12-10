@@ -1,7 +1,7 @@
 import board
 import heuristic
-from search import bfs,dfs,ids,dfs_rand,dfs_spec,ids_dfs
 import numpy as np
+from search import bfs,dfs,ids,dfs_rand,dfs_spec,ids_bfs
 from mynode import MyNode
 from item import INITIAL,DIRECTION,POINT_TABLE
 from time import sleep,time
